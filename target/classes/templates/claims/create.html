@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Submit Ownership Claim - RECLAIMX{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4">
+                <h3 class="fw-bold mb-2">Submit Ownership Claim</h3>
+                <p class="text-muted small mb-4">Filing a claim for found item: <strong>{{ item.title }}</strong> (Found at {{ item.location }})</p>
+
+                <form action="/claims/create/{{ item.id }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Ownership Statement</label>
+                        <textarea name="message" class="form-control" rows="3" placeholder="Explain why you believe this item belongs to you..." required></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Private Identifying Proof / Marks</label>
+                        <textarea name="proof" class="form-control" rows="4" placeholder="List unique secrets only the true owner would know (e.g. lock screen code, contents inside a hidden pocket, distinct scratch mark location, invoice details)..." required></textarea>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="/items/{{ item.id }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-paper-plane me-1"></i> Submit Claim for Review
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

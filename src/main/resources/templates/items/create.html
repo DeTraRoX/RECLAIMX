@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Report Item - RECLAIMX{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm p-4">
+                <h3 class="fw-bold mb-3">Report a Lost or Found Item</h3>
+                <form action="/items/create" method="POST" enctype="multipart/form-data">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Report Type</label>
+                            <select name="type" class="form-select" required>
+                                <option value="lost" {% if form_data.type == "lost" %}selected{% endif %}>I Lost an Item</option>
+                                <option value="found" {% if form_data.type == "found" %}selected{% endif %}>I Found an Item</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Category</label>
+                            <select name="category" class="form-select" required>
+                                <option value="">Select Category...</option>
+                                {% for cat in categories %}
+                                    <option value="{{ cat }}" {% if form_data.category == cat %}selected{% endif %}>{{ cat }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Item Title / Name</label>
+                            <input type="text" name="title" class="form-control" placeholder="e.g. Black Leather Wallet or Blue Backpack" value="{{ form_data.title }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Color</label>
+                            <input type="text" name="color" class="form-control" placeholder="e.g. Black, Navy Blue" value="{{ form_data.color }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Brand / Make (optional)</label>
+                            <input type="text" name="brand" class="form-control" placeholder="e.g. Nike, Apple, Dell" value="{{ form_data.brand }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Campus Location</label>
+                            <select name="location_select" id="location_select" class="form-select" required>
+                                {% for loc in locations %}
+                                    <option value="{{ loc }}" {% if form_data.location_select == loc %}selected{% endif %}>{{ loc }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6" id="custom_location_group" style="display: none;">
+                            <label class="form-label">Custom Location Name</label>
+                            <input type="text" name="location_custom" id="location_custom" class="form-control" placeholder="Specify building/room" value="{{ form_data.location_custom }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date Lost / Found</label>
+                            <input type="date" name="date" class="form-control" value="{{ form_data.date }}" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Upload Image (optional)</label>
+                            <input type="file" name="image" class="form-control" accept="image/*">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Detailed Description</label>
+                            <textarea name="description" class="form-control" rows="4" placeholder="Provide distinct characteristics, contents, stickers, or identifying marks..." required>{{ form_data.description }}</textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2 mt-4">
+                        <i class="fa-solid fa-paper-plane me-2"></i> Submit Report
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

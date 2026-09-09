@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Review Claims - Admin Panel{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Review Claims</h2>
+        <div class="btn-group">
+            <a href="/admin/claims?status=Pending" class="btn btn-outline-warning {% if current_status == 'Pending' %}active{% endif %}">Pending</a>
+            <a href="/admin/claims?status=Approved" class="btn btn-outline-success {% if current_status == 'Approved' %}active{% endif %}">Approved</a>
+            <a href="/admin/claims?status=Rejected" class="btn btn-outline-danger {% if current_status == 'Rejected' %}active{% endif %}">Rejected</a>
+            <a href="/admin/claims?status=All" class="btn btn-outline-secondary {% if current_status == 'All' %}active{% endif %}">All Claims</a>
+        </div>
+    </div>
+
+    <div class="card p-3 shadow-sm">
+        {% if claims_data is empty %}
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-file-circle-check fa-3x mb-3 text-secondary"></i>
+                <p class="lead mb-0">No claims found under filter status: <strong>{{ current_status }}</strong></p>
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Claimant</th>
+                            <th>Found Item</th>
+                            <th>Claim Message</th>
+                            <th>Proof Details</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in claims_data %}
+                            {% set claim = data.claim %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">{{ claim.claimant.name }}</div>
+                                    <span class="small text-muted">{{ claim.claimant.email }}</span>
+                                </td>
+                                <td>
+                                    <a href="/items/{{ claim.item.id }}" class="fw-semibold text-decoration-none">{{ claim.item.title }}</a>
+                                </td>
+                                <td><span class="small text-muted text-truncate-2">{{ claim.message }}</span></td>
+                                <td><span class="small text-muted text-truncate-2">{{ claim.proof }}</span></td>
+                                <td>{% if claim.status == 'Approved' %}<span class="badge bg-success">{{ claim.status }}</span>{% elseif claim.status == 'Rejected' %}<span class="badge bg-danger">{{ claim.status }}</span>{% else %}<span class="badge bg-warning">{{ claim.status }}</span>{% endif %}</td>
+                                <td class="text-end">
+                                    {% if claim.status == 'Pending' %}
+                                        <form action="/admin/claims/{{ claim.id }}/approve" method="POST" class="d-inline me-1">
+                                            <button type="submit" class="btn btn-sm btn-success"><i class="fa-solid fa-check me-1"></i> Approve</button>
+                                        </form>
+                                        <form action="/admin/claims/{{ claim.id }}/reject" method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-danger"><i class="fa-solid fa-xmark me-1"></i> Reject</button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

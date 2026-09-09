@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Manage Users - Admin Panel{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="fw-bold mb-4">Manage Users</h2>
+
+    <div class="card p-3 shadow-sm mb-4">
+        <form action="/admin/users" method="GET">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <input type="text" name="q" class="form-control" placeholder="Search by name, email, student ID..." value="{{ filters.q }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="role" class="form-select">
+                        <option value="all" {% if filters.role == "all" %}selected{% endif %}>All Roles</option>
+                        <option value="student" {% if filters.role == "student" %}selected{% endif %}>Students</option>
+                        <option value="admin" {% if filters.role == "admin" %}selected{% endif %}>Admins</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100"><i class="fa-solid fa-filter me-1"></i> Filter Users</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="card p-3 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>User Name</th>
+                        <th>Email</th>
+                        <th>Student ID</th>
+                        <th>Department</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                     {% for u in users %}
+                        <tr>
+                            <td class="fw-semibold">{{ u.name }}</td>
+                            <td>{{ u.email }}</td>
+                            <td>{{ u.studentId }}</td>
+                            <td>{{ u.department }}</td>
+                            <td>{% if u.role == 'admin' %}<span class="badge bg-primary">{{ u.role | upper }}</span>{% else %}<span class="badge bg-secondary">{{ u.role | upper }}</span>{% endif %}</td>
+                            <td>{% if u.isActive %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-danger">Deactivated</span>{% endif %}</td>
+                            <td class="text-end">
+                                {% if u.id != current_user.id %}
+                                    <form action="/admin/users/{{ u.id }}/toggle-status" method="POST" class="d-inline me-1">
+                                        <button type="submit" class="btn btn-sm {% if u.isActive %}btn-outline-warning{% else %}btn-outline-success{% endif %}">
+                                            {% if u.isActive %}Deactivate{% else %}Activate{% endif %}
+                                        </button>
+                                    </form>
+                                    <form action="/admin/users/{{ u.id }}/change-role" method="POST" class="d-inline">
+                                        <input type="hidden" name="role" value="{% if u.role == 'admin' %}student{% else %}admin{% endif %}">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                                            Make {% if u.role == 'admin' %}Student{% else %}Admin{% endif %}
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

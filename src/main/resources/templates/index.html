@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}RECLAIMX - College Lost & Found Platform{% endblock %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="hero-section text-white py-5">
+    <div class="hero-blob hero-blob-1"></div>
+    <div class="hero-blob hero-blob-2"></div>
+    <div class="container hero-content py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-7 mb-4 mb-lg-0">
+                <span class="badge bg-primary mb-3 px-3 py-2 text-uppercase fw-bold" style="letter-spacing: 1px;">
+                    <i class="fa-solid fa-graduation-cap me-2"></i> Official Campus Lost & Found
+                </span>
+                <h1 class="display-3 fw-extrabold mb-3">
+                    Lost something on campus? <span class="counter">Reclaim it.</span>
+                </h1>
+                <p class="lead text-white-50 mb-4" style="max-width: 600px;">
+                    RECLAIMX connects students with lost items across campus through secure verification and streamlined claim management.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="/items/create" class="btn btn-primary btn-lg px-4 py-3">
+                        <i class="fa-solid fa-circle-plus me-2"></i> Report Lost or Found Item
+                    </a>
+                    <a href="/browse" class="btn btn-outline-light btn-lg px-4 py-3">
+                        <i class="fa-solid fa-magnifying-glass me-2"></i> Browse All Listings
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <!-- Statistics Card Grid -->
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="stat-card-glass p-4 text-center">
+                            <i class="fa-solid fa-box-open fa-2x text-info mb-2"></i>
+                            <h2 class="fw-bold mb-0 text-white">{{ stats.total_lost }}</h2>
+                            <span class="text-white-50 small">Lost Items</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card-glass p-4 text-center">
+                            <i class="fa-solid fa-hand-holding-heart fa-2x text-success mb-2"></i>
+                            <h2 class="fw-bold mb-0 text-white">{{ stats.total_found }}</h2>
+                            <span class="text-white-50 small">Found Items</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card-glass p-4 text-center">
+                            <i class="fa-solid fa-circle-check fa-2x text-warning mb-2"></i>
+                            <h2 class="fw-bold mb-0 text-white">{{ stats.returned_items }}</h2>
+                            <span class="text-white-50 small">Items Returned</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card-glass p-4 text-center">
+                            <i class="fa-solid fa-chart-line fa-2x text-primary mb-2"></i>
+                            <h2 class="fw-bold mb-0 text-white">{{ stats.recovery_rate }}%</h2>
+                            <span class="text-white-50 small">Recovery Rate</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-white">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="text-brand-primary fw-bold text-uppercase">Simple 3-Step Process</span>
+            <h2 class="fw-bold mt-1">How RECLAIMX Works</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 p-4 step-card text-center">
+                    <div class="step-number">1</div>
+                    <i class="fa-solid fa-pen-to-square fa-3x text-primary mb-3"></i>
+                    <h4 class="fw-bold">Report an Item</h4>
+                    <p class="text-muted small">Submit details about what you lost or found on campus with descriptions, location, and dates.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 step-card text-center">
+                    <div class="step-number">2</div>
+                    <i class="fa-solid fa-file-shield fa-3x text-warning mb-3"></i>
+                    <h4 class="fw-bold">Submit Claim & Proof</h4>
+                    <p class="text-muted small">Claimants file ownership requests with private marks and descriptions verified by admin.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 step-card text-center">
+                    <div class="step-number">3</div>
+                    <i class="fa-solid fa-handshake-angle fa-3x text-success mb-3"></i>
+                    <h4 class="fw-bold">Safely Reclaim</h4>
+                    <p class="text-muted small">Once verified by administration, collect your item directly from the campus admin block.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

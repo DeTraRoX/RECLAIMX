@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Analytics Reports - Admin Panel{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="fw-bold mb-4">Analytics & Statistics Reports</h2>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card p-4 shadow-sm h-100">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-chart-pie me-2 text-primary"></i> Top Insights</h5>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <span class="text-muted small d-block">Top Lost Category</span>
+                        <h4 class="fw-bold text-primary">{{ detailed_data.top_category }}</h4>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted small d-block">Top Incident Location</span>
+                        <h4 class="fw-bold text-info">{{ detailed_data.top_location }}</h4>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted small d-block">Overall Recovery Rate</span>
+                        <h4 class="fw-bold text-success">{{ stats.recovery_rate }}%</h4>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted small d-block">Total Returned Items</span>
+                        <h4 class="fw-bold text-warning">{{ stats.returned_items }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card p-4 shadow-sm h-100">
+                <h5 class="fw-bold mb-3"><i class="fa-solid fa-location-dot me-2 text-danger"></i> Top Location Breakdown</h5>
+                {% if detailed_data.location_stats is empty %}
+                    <p class="text-muted small">No location statistics available.</p>
+                {% else %}
+                    <ul class="list-group list-group-flush">
+                        {% for loc in detailed_data.location_stats %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>{{ loc.location }}</span>
+                                <span class="badge bg-primary rounded-pill">{{ loc.count }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

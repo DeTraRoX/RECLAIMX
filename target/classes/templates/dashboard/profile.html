@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}My Profile - RECLAIMX{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm p-4">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="avatar-circle fs-3" style="width: 60px; height: 60px;">
+                        {{ current_user.name | slice(0, 1) | upper }}
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0">{{ current_user.name }}</h4>
+                        <span class="badge bg-primary text-uppercase">{{ current_user.role }}</span>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-6">
+                        <span class="text-muted small d-block">Student ID</span>
+                        <span class="fw-semibold">{{ current_user.studentId }}</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted small d-block">Email</span>
+                        <span class="fw-semibold">{{ current_user.email }}</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted small d-block">Department</span>
+                        <span class="fw-semibold">{{ current_user.department }}</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted small d-block">Year of Study</span>
+                        <span class="fw-semibold">Year {{ current_user.year }}</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted small d-block">Phone</span>
+                        <span class="fw-semibold">{{ current_user.phone }}</span>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top text-end">
+                    <a href="/profile/edit" class="btn btn-outline-primary">
+                        <i class="fa-solid fa-pen me-1"></i> Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

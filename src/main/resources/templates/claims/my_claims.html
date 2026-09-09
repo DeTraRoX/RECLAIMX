@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}My Claims - RECLAIMX{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <h2 class="fw-bold mb-4">My Submitted Claims</h2>
+
+    <div class="card p-3 shadow-sm">
+        {% if claims is empty %}
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-file-circle-xmark fa-3x mb-3 text-secondary"></i>
+                <p class="lead mb-0">You have not submitted any ownership claims yet.</p>
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Claim ID</th>
+                            <th>Target Item</th>
+                            <th>Submitted Date</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for claim in claims %}
+                            <tr>
+                                <td>#CLM-{{ claim.id }}</td>
+                                <td class="fw-semibold">{{ claim.item.title }}</td>
+                                <td>{{ claim.createdAt }}</td>
+                                <td>{% if claim.status == 'Approved' %}<span class="badge bg-success">{{ claim.status }}</span>{% elseif claim.status == 'Rejected' %}<span class="badge bg-danger">{{ claim.status }}</span>{% else %}<span class="badge bg-warning">{{ claim.status }}</span>{% endif %}</td>
+                                <td class="text-end">
+                                    <a href="/claims/{{ claim.id }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-eye me-1"></i> View Details</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

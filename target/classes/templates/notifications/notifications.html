@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Notifications - RECLAIMX{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">Notifications</h2>
+        <button id="mark-all-read-btn" class="btn btn-outline-secondary btn-sm">
+            <i class="fa-solid fa-check-double me-1"></i> Mark All as Read
+        </button>
+    </div>
+
+    <div class="card p-3 shadow-sm">
+        {% if notifications is empty %}
+            <div class="text-center py-5 text-muted">
+                <i class="fa-solid fa-bell-slash fa-3x mb-3 text-secondary"></i>
+                <p class="lead mb-0">You have no notifications at this time.</p>
+            </div>
+        {% else %}
+            <div class="list-group list-group-flush">
+                {% for notif in notifications %}
+                    <div id="notif-row-{{ notif.id }}" class="list-group-item d-flex justify-content-between align-items-center py-3 {% if not notif.isRead %}notif-item-unread{% else %}text-muted{% endif %}">
+                        <div>
+                            <p class="mb-1 fw-medium">{{ notif.message }}</p>
+                            <span class="small text-muted">{{ notif.createdAt }}</span>
+                        </div>
+                        {% if not notif.isRead %}
+                            <button class="btn btn-sm btn-light mark-read-btn" data-id="{{ notif.id }}">
+                                Mark Read
+                            </button>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

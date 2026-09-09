@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - RECLAIMX{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Admin Dashboard</h2>
+            <p class="text-muted mb-0">Platform overview and pending claim review</p>
+        </div>
+    </div>
+
+    <!-- Admin Counters Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm text-center">
+                <i class="fa-solid fa-users text-primary fs-3 mb-2"></i>
+                <h3 class="fw-bold mb-0">{{ stats.total_users }}</h3>
+                <span class="text-muted small">Total Registered Users</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm text-center">
+                <i class="fa-solid fa-boxes-stacked text-info fs-3 mb-2"></i>
+                <h3 class="fw-bold mb-0">{{ stats.total_lost + stats.total_found }}</h3>
+                <span class="text-muted small">Total Reported Items</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm text-center">
+                <i class="fa-solid fa-clock-history text-warning fs-3 mb-2"></i>
+                <h3 class="fw-bold mb-0">{{ stats.pending_claims }}</h3>
+                <span class="text-muted small">Pending Claims</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm text-center">
+                <i class="fa-solid fa-circle-check text-success fs-3 mb-2"></i>
+                <h3 class="fw-bold mb-0">{{ stats.returned_items }}</h3>
+                <span class="text-muted small">Items Returned</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Claims Table -->
+    <div class="card p-4 shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0"><i class="fa-solid fa-hourglass-half me-2 text-warning"></i> Recent Pending Claims</h5>
+            <a href="/admin/claims" class="btn btn-sm btn-outline-primary">View All Claims</a>
+        </div>
+        {% if recent_claims is empty %}
+            <p class="text-muted small mb-0">No pending claims awaiting review.</p>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Claimant</th>
+                            <th>Found Item</th>
+                            <th>Date</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for claim in recent_claims %}
+                            <tr>
+                                <td>{{ claim.claimant.name }} ({{ claim.claimant.email }})</td>
+                                <td class="fw-semibold">{{ claim.item.title }}</td>
+                                <td>{{ claim.createdAt }}</td>
+                                <td class="text-end">
+                                    <form action="/admin/claims/{{ claim.id }}/approve" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-success me-1"><i class="fa-solid fa-check me-1"></i> Approve</button>
+                                    </form>
+                                    <form action="/admin/claims/{{ claim.id }}/reject" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger"><i class="fa-solid fa-xmark me-1"></i> Reject</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

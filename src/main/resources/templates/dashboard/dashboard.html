@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - RECLAIMX{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Student Dashboard</h2>
+            <p class="text-muted mb-0">Overview of your reported items and active claims</p>
+        </div>
+        <a href="/items/create" class="btn btn-primary">
+            <i class="fa-solid fa-plus me-1"></i> Report Item
+        </a>
+    </div>
+
+    <!-- Counters Grid -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm text-center">
+                <i class="fa-solid fa-box-open text-primary fs-3 mb-2"></i>
+                <h3 class="fw-bold mb-0">{{ counts.lost }}</h3>
+                <span class="text-muted small">My Lost Reports</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm text-center">
+                <i class="fa-solid fa-hand-holding-heart text-success fs-3 mb-2"></i>
+                <h3 class="fw-bold mb-0">{{ counts.found }}</h3>
+                <span class="text-muted small">My Found Reports</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm text-center">
+                <i class="fa-solid fa-file-signature text-warning fs-3 mb-2"></i>
+                <h3 class="fw-bold mb-0">{{ counts.claims }}</h3>
+                <span class="text-muted small">My Claims</span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm text-center">
+                <i class="fa-solid fa-circle-check text-info fs-3 mb-2"></i>
+                <h3 class="fw-bold mb-0">{{ counts.returned }}</h3>
+                <span class="text-muted small">Returned Items</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- My Lost Items -->
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0"><i class="fa-solid fa-search me-2 text-danger"></i> My Lost Reports</h5>
+                    <a href="/items/my-items" class="small text-decoration-none">View All</a>
+                </div>
+                {% if my_lost_items is empty %}
+                    <p class="text-muted small">No lost items reported yet.</p>
+                {% else %}
+                    <div class="list-group list-group-flush">
+                        {% for item in my_lost_items %}
+                            <a href="/items/{{ item.id }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-semibold">{{ item.title }}</span>
+                                    <div class="small text-muted">{{ item.category }} • {{ item.location }}</div>
+                                </div>
+                                <span class="badge bg-secondary">{{ item.status }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- My Found Items -->
+        <div class="col-md-6">
+            <div class="card shadow-sm p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0"><i class="fa-solid fa-hand-holding-heart me-2 text-success"></i> My Found Reports</h5>
+                    <a href="/items/my-items" class="small text-decoration-none">View All</a>
+                </div>
+                {% if my_found_items is empty %}
+                    <p class="text-muted small">No found items reported yet.</p>
+                {% else %}
+                    <div class="list-group list-group-flush">
+                        {% for item in my_found_items %}
+                            <a href="/items/{{ item.id }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="fw-semibold">{{ item.title }}</span>
+                                    <div class="small text-muted">{{ item.category }} • {{ item.location }}</div>
+                                </div>
+                                <span class="badge bg-success">{{ item.status }}</span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
