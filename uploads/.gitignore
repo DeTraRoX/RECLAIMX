@@ -1,0 +1,30 @@
+# Maven
+target/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Java
+*.class
+
+# Local database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment / secrets
+.env
+.env.*
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local uploads
+uploads/*
+!uploads/.gitkeep
