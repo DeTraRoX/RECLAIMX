@@ -2,13 +2,11 @@ package com.reclaimx.dao;
 
 import com.reclaimx.config.Database;
 import com.reclaimx.models.User;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDao {
-
     public User mapRow(ResultSet rs) throws SQLException {
         User user = new User();
         user.setId(rs.getInt("id"));

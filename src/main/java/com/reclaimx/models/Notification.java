@@ -4,12 +4,11 @@ public class Notification {
     private int id;
     private int userId;
     private String message;
-    private String type; // 'claim_submitted', 'claim_approved', 'claim_rejected', 'returned', 'system'
+    private String type; // type of item like claim approved , claim rejected , claim statuss
     private Integer relatedItemId;
     private boolean isRead;
     private String createdAt;
 
-    // Joined item details if needed
     private Item relatedItem;
 
     public Notification() {}

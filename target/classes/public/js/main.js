@@ -1,9 +1,4 @@
-/**
- * RECLAIMX JavaScript Helpers & Dynamic Interactivity
- */
-
 document.addEventListener("DOMContentLoaded", function () {
-    // 1. Toast / Alert Auto Dismissal
     const flashAlerts = document.querySelectorAll(".alert-dismissible");
     flashAlerts.forEach(function (alert) {
         setTimeout(function () {
@@ -13,12 +8,10 @@ document.addEventListener("DOMContentLoaded", function () {
             } catch (e) {}
         }, 5000);
     });
-
-    // 2. Custom Location Input Toggle in Form (Create / Edit Item)
+    // custom location input like where the item was found 
     const locationSelect = document.getElementById("location_select");
     const customLocationGroup = document.getElementById("custom_location_group");
     const locationCustomInput = document.getElementById("location_custom");
-
     if (locationSelect && customLocationGroup) {
         function toggleCustomLocation() {
             if (locationSelect.value === "Other") {
@@ -32,15 +25,13 @@ document.addEventListener("DOMContentLoaded", function () {
         locationSelect.addEventListener("change", toggleCustomLocation);
         toggleCustomLocation();
     }
-
-    // 3. Mark Notification as Read (AJAX)
+    //mark notification as read 
     const markReadButtons = document.querySelectorAll(".mark-read-btn");
     markReadButtons.forEach(function (btn) {
         btn.addEventListener("click", function (e) {
             e.preventDefault();
             const notifId = this.getAttribute("data-id");
             if (!notifId) return;
-
             fetch("/notifications/read/" + notifId, {
                 method: "POST",
                 headers: {
@@ -61,8 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(err => console.error("Notification mark read error:", err));
         });
     });
-
-    // 4. Mark All Read Button (AJAX)
+    // mark all msg as read button 
     const markAllReadBtn = document.getElementById("mark-all-read-btn");
     if (markAllReadBtn) {
         markAllReadBtn.addEventListener("click", function (e) {

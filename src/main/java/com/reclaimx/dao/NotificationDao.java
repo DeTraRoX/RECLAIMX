@@ -7,6 +7,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// send notification about the item like lost found claimed rejected etc
+
 public class NotificationDao {
 
     private final ItemDao itemDao = new ItemDao();

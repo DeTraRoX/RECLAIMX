@@ -13,15 +13,12 @@
                 {% endif %}
                     <span class="badge bg-secondary fs-6">{{ item.status }}</span>
                 </div>
-
                 <h2 class="fw-bold mb-3">{{ item.title }}</h2>
-
                 {% if item.image is not null %}
                     <div class="text-center my-3">
                         <img src="/uploads/{{ item.image }}" class="img-fluid rounded shadow-sm" style="max-height: 350px; object-fit: contain;" alt="{{ item.title }}">
                     </div>
                 {% endif %}
-
                 <div class="row g-3 my-3">
                     <div class="col-6 col-md-4">
                         <span class="text-muted small d-block">Category</span>
@@ -33,12 +30,19 @@
                     </div>
                     <div class="col-6 col-md-4">
                         <span class="text-muted small d-block">Brand / Make</span>
-                        <span class="fw-semibold">{{ item.brand ?? 'N/A' }}</span>
+                       {% if item.brand %}
+    <span class="fw-semibold">{{ item.brand }}</span>
+{% else %}
+    <span class="fw-semibold">N/A</span>
+{% endif %}
                     </div>
                     <div class="col-6 col-md-4">
                         <span class="text-muted small d-block">Location</span>
-                        <span class="fw-semibold">{{ item.location }}</span>
-                    </div>
+{% if item.brand %}
+    <span class="fw-semibold">{{ item.brand }}</span>
+{% else %}
+    <span class="fw-semibold">N/A</span>
+{% endif %}                    </div>
                     <div class="col-6 col-md-4">
                         <span class="text-muted small d-block">Date</span>
                         <span class="fw-semibold">{{ item.dateLostFound }}</span>
@@ -48,17 +52,14 @@
                         <span class="fw-semibold">{{ item.userName }}</span>
                     </div>
                 </div>
-
                 <div class="mb-4">
                     <h5 class="fw-bold">Description</h5>
                     <p class="text-muted">{{ item.description }}</p>
                 </div>
-
                 <div class="d-flex justify-content-between align-items-center border-top pt-3">
                     <a href="/browse" class="btn btn-outline-secondary">
                         <i class="fa-solid fa-arrow-left me-1"></i> Back to Browse
                     </a>
-
                     {% if show_claim_btn %}
                         <a href="/claims/create/{{ item.id }}" class="btn btn-success">
                             <i class="fa-solid fa-file-signature me-1"></i> File Ownership Claim

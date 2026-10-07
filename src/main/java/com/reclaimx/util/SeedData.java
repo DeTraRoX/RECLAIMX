@@ -6,7 +6,7 @@ import com.reclaimx.models.User;
 public class SeedData {
 
     private static final UserDao userDao = new UserDao();
-
+// admin is the superuser so admin account is created 
     public static void seedIfEmpty() {
         if (userDao.findByEmail("admin@reclaimx.com") == null) {
             System.out.println("Seeding default admin user...");
@@ -29,7 +29,7 @@ public class SeedData {
             System.out.println("===================================");
         }
 
-        // Sample student account
+        // Ssample stu ids for testing the project 
         if (userDao.findByEmail("ayush@reclaimx.com") == null) {
             User student = new User();
             student.setName("Ayush Sharma");

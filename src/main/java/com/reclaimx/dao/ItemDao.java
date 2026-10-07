@@ -2,11 +2,11 @@ package com.reclaimx.dao;
 
 import com.reclaimx.config.Database;
 import com.reclaimx.models.Item;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// display item details of lost or found items 
 public class ItemDao {
 
     public Item mapRow(ResultSet rs) throws SQLException {
@@ -34,7 +34,7 @@ public class ItemDao {
 
         return item;
     }
-
+ // query to find item by id 
     public Item findById(int id) {
         String sql = """
             SELECT i.*, u.name as user_name, u.email as user_email, u.phone as user_phone
@@ -55,6 +55,7 @@ public class ItemDao {
         return null;
     }
 
+    //create item in the db
     public boolean createItem(Item item) {
         String sql = """
             INSERT INTO items (user_id, title, description, category, color, brand, location, date_lost_found, image, type, status, created_at, updated_at)
@@ -87,7 +88,7 @@ public class ItemDao {
         }
         return false;
     }
-
+// query to update item details in the db 
     public boolean updateItem(Item item) {
         String sql = """
             UPDATE items SET title = ?, description = ?, category = ?, color = ?, brand = ?, location = ?, date_lost_found = ?, image = ?, updated_at = datetime('now')
@@ -111,6 +112,7 @@ public class ItemDao {
         return false;
     }
 
+    //query to update the status of the item in the db which can be done by the admin user 
     public boolean updateStatus(int itemId, String status) {
         String sql = "UPDATE items SET status = ?, updated_at = datetime('now') WHERE id = ?";
         try (Connection conn = Database.getConnection();
@@ -124,6 +126,7 @@ public class ItemDao {
         return false;
     }
 
+    // delete item queryu
     public boolean deleteItem(int id) {
         String sql = "DELETE FROM items WHERE id = ?";
         try (Connection conn = Database.getConnection();
@@ -135,7 +138,7 @@ public class ItemDao {
         }
         return false;
     }
-
+// query to find user in the db in admin portal 
     public List<Item> findByUserId(int userId) {
         List<Item> list = new ArrayList<>();
         String sql = """
@@ -180,7 +183,7 @@ public class ItemDao {
         }
         return list;
     }
-
+// find all the items in the dasboard 
     public List<Item> findBrowseItems(String q, String type, String category, String location, String color, String status, String sort) {
         List<Item> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("""
@@ -248,7 +251,7 @@ public class ItemDao {
         }
         return list;
     }
-
+// filter query for item sdeach
     public List<Item> findAllFiltered(String q, String type, String status) {
         List<Item> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("""

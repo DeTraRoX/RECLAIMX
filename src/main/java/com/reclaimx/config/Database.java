@@ -7,10 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Database {
-
     private static final String DB_PATH = "instance/reclaimx.db";
     private static final String DB_URL = "jdbc:sqlite:" + DB_PATH;
-
     public static Connection getConnection() throws SQLException {
         File dir = new File("instance");
         if (!dir.exists()) {
@@ -18,14 +16,11 @@ public class Database {
         }
         return DriverManager.getConnection(DB_URL);
     }
-
     public static void initDatabase() {
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
-
-            // Enable foreign keys
+            // query to enable foreign keys in the db 
             stmt.execute("PRAGMA foreign_keys = ON;");
-
-            // Users Table
+            // this query creates user table
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,8 +36,7 @@ public class Database {
                     is_active INTEGER NOT NULL DEFAULT 1
                 );
             """);
-
-            // Items Table
+            // this query creates item table
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS items (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,8 +56,7 @@ public class Database {
                     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
                 );
             """);
-
-            // Claims Table
+            // query for claims table 
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS claims (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -80,8 +73,7 @@ public class Database {
                     FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL
                 );
             """);
-
-            // Notifications Table
+            // query for notification that are senrt 
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS notifications (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -95,7 +87,6 @@ public class Database {
                     FOREIGN KEY (related_item_id) REFERENCES items(id) ON DELETE SET NULL
                 );
             """);
-
             System.out.println("Database schema initialized successfully.");
         } catch (SQLException e) {
             System.err.println("Database initialization error: " + e.getMessage());

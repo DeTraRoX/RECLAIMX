@@ -6,12 +6,12 @@ public class Claim {
     private int claimantId;
     private String message;
     private String proof;
-    private String status; // "Pending", "Approved", "Rejected"
+    private String status; // check status either pending , approved or rejected the claim of item 
     private String createdAt;
     private String reviewedAt;
     private Integer reviewedBy;
 
-    // Joined Details for convenience in templates
+    // add item and user details in the temmplate for better efficiency
     private Item item;
     private User claimant;
     private User reviewer;

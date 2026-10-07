@@ -11,12 +11,12 @@ public class Item {
     private String location;
     private String dateLostFound;
     private String image;
-    private String type; // "lost" or "found"
-    private String status; // "Lost", "Found", "Claimed", "Verified", "Returned", "Rejected", "Closed"
+    private String type; // item type lost ya found 
+    private String status; // status lost found rejected claimed in progress 
     private String createdAt;
     private String updatedAt;
 
-    // Joined User Details for convenience in templates
+    // display user detail with item for better results
     private String userName;
     private String userEmail;
     private String userPhone;
