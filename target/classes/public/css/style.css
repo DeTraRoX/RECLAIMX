@@ -57,7 +57,7 @@
     --border-radius-md:     var(--rx-radius-sm);
 }
 
-/* Base*/
+/* Base css*/
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
@@ -75,7 +75,7 @@ body {
     background: linear-gradient(var(--rx-primary), var(--rx-secondary));
     border-radius: 3px;
 }
-/*Navbar*/
+/*Navbar css */
 .bg-brand-primary {
     background: linear-gradient(135deg, #0d0d1f 0%, #1a1040 60%, #0f1a40 100%) !important;
     border-bottom: 1px solid rgba(108, 99, 255, 0.25);
@@ -184,7 +184,7 @@ body {
     border-color: rgba(255,255,255,0.7) !important;
     color: #fff !important;
 }
-/*Buttons*/
+/*Buttons css*/
 .btn {
     font-weight: 600;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -249,7 +249,7 @@ body {
     box-shadow: 0 4px 15px rgba(108, 99, 255, 0.35);
     transform: translateY(-2px);
 }
-/* Card*/
+/* Card css */
 .card {
     border-radius: var(--rx-radius-md) !important;
     border: 1px solid rgba(108, 99, 255, 0.08) !important;
@@ -262,7 +262,7 @@ body {
     box-shadow: var(--rx-shadow-lg) !important;
     border-color: rgba(108, 99, 255, 0.2) !important;
 }
-/* Forms*/
+/* Forms css*/
 .form-control, .form-select {
     border-radius: var(--rx-radius-sm) !important;
     border: 1.5px solid rgba(108, 99, 255, 0.12) !important;
