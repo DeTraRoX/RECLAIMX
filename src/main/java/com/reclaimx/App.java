@@ -123,6 +123,7 @@ app.get("/admin/users", AdminController::renderUsers);
 app.post("/admin/claims/{id}/approve", AdminController::handleApproveClaim);
   app.post("/admin/claims/{id}/reject", AdminController::handleRejectClaim);
  app.get("/admin/reports", AdminController::renderReports);
+ app.post("/admin/reports/seed-demo", AdminController::handleSeedDemoData);
 
         // notification routes 
   app.get("/notifications", NotificationController::renderNotifications);

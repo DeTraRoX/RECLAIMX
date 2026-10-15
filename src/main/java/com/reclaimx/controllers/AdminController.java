@@ -268,6 +268,23 @@ public class AdminController {
         Map<String, Object> model = SecurityUtil.baseModel(ctx);
         model.put("detailed_data", detailedData);
         model.put("stats", generalStats);
+        model.put("chart_data_json", detailedData.get("chart_data_json"));
+        model.put("status_matrix", detailedData.get("status_matrix"));
+        model.put("claims_breakdown", detailedData.get("claims_breakdown"));
+        model.put("category_stats", detailedData.get("category_stats"));
+        model.put("location_stats", detailedData.get("location_stats"));
+        model.put("monthly_stats", detailedData.get("monthly_stats"));
         ctx.render("templates/admin/reports.html", model);
+    }
+
+    public static void handleSeedDemoData(Context ctx) {
+        if (!SecurityUtil.requireAdmin(ctx)) return;
+        boolean seeded = statsService.seedDemoDataIfRequested();
+        if (seeded) {
+            SecurityUtil.addFlash(ctx, "success", "Sample campus items and claim lifecycle records successfully loaded!");
+        } else {
+            SecurityUtil.addFlash(ctx, "info", "Sample records could not be loaded or an error occurred.");
+        }
+        ctx.redirect("/admin/reports");
     }
 }

@@ -1,49 +1,791 @@
 {% extends "base.html" %}
-{% block title %}Analytics Reports - Admin Panel{% endblock %}
+{% block title %}Statistical Reports & Analytics - RECLAIMX Admin{% endblock %}
 {% block content %}
 <div class="container py-4">
-    <h2 class="fw-bold mb-4">Analytics & Statistics Reports</h2>
-    <div class="row g-4 mb-4">
-        <div class="col-md-6">
-            <div class="card p-4 shadow-sm h-100">
-                <h5 class="fw-bold mb-3"><i class="fa-solid fa-chart-pie me-2 text-primary"></i> Top Insights</h5>
-                <div class="row g-3">
-                    <div class="col-6">
-                        <span class="text-muted small d-block">Top Lost Category</span>
-                        <h4 class="fw-bold text-primary">{{ detailed_data.top_category }}</h4>
+    <!-- Header with Breadcrumb & Action Toolbar -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 border-bottom pb-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">
+                    <i class="fa-solid fa-chart-line me-1"></i> Admin Analytics
+                </span>
+                <span class="text-muted small">• Live Platform Audit</span>
+            </div>
+            <h2 class="fw-bold mb-1 text-dark">Statistical Reports & Lifecycle Analytics</h2>
+            <p class="text-muted mb-0 small">
+                Comprehensive audit of Lost & Found items across all lifecycle statuses: Returned, Claimed, Rejected, Active, and Closed.
+            </p>
+        </div>
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <button onclick="window.print()" class="btn btn-outline-secondary btn-sm shadow-sm">
+                <i class="fa-solid fa-print me-1"></i> Print / Export PDF
+            </button>
+            <button onclick="window.location.reload()" class="btn btn-outline-primary btn-sm shadow-sm">
+                <i class="fa-solid fa-arrows-rotate me-1"></i> Refresh Data
+            </button>
+            <form action="/admin/reports/seed-demo" method="POST" class="d-inline" onsubmit="return confirm('Load realistic campus demonstration records (items & claims across all statuses)?');">
+                <button type="submit" class="btn btn-primary btn-sm shadow-sm">
+                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Load Demo Records
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SECTION 1: High-Level Platform KPI Summary Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Lost Items KPI Card -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card h-100 shadow-sm border-0 border-top border-4 border-danger position-relative overflow-hidden">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Lost Items Cataloged</span>
+                        <div class="rounded-circle bg-danger-subtle text-danger d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                            <i class="fa-solid fa-search"></i>
+                        </div>
                     </div>
-                    <div class="col-6">
-                        <span class="text-muted small d-block">Top Incident Location</span>
-                        <h4 class="fw-bold text-info">{{ detailed_data.top_location }}</h4>
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <h2 class="fw-bold mb-0 text-danger">{{ detailed_data.total_lost }}</h2>
+                        <span class="badge bg-danger-subtle text-danger font-monospace">{{ detailed_data.lost_recovery_rate }}% recovered</span>
                     </div>
-                    <div class="col-6">
-                        <span class="text-muted small d-block">Overall Recovery Rate</span>
-                        <h4 class="fw-bold text-success">{{ stats.recovery_rate }}%</h4>
-                    </div>
-                    <div class="col-6">
-                        <span class="text-muted small d-block">Total Returned Items</span>
-                        <h4 class="fw-bold text-warning">{{ stats.returned_items }}</h4>
+                    <div class="pt-2 border-top small text-muted">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span><i class="fa-solid fa-circle text-danger me-1" style="font-size: 8px;"></i> Still Lost (Active):</span>
+                            <strong class="text-dark">{{ detailed_data.lost_open_count }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span><i class="fa-solid fa-circle text-warning me-1" style="font-size: 8px;"></i> Under Claim:</span>
+                            <strong class="text-dark">{{ detailed_data.lost_claimed_count }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span><i class="fa-solid fa-circle text-success me-1" style="font-size: 8px;"></i> Returned to Owner:</span>
+                            <strong class="text-success">{{ detailed_data.lost_returned_count }}</strong>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card p-4 shadow-sm h-100">
-                <h5 class="fw-bold mb-3"><i class="fa-solid fa-location-dot me-2 text-danger"></i> Top Location Breakdown</h5>
-                {% if detailed_data.location_stats is empty %}
-                    <p class="text-muted small">No location statistics available.</p>
+
+        <!-- Found Items KPI Card -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card h-100 shadow-sm border-0 border-top border-4 border-info position-relative overflow-hidden">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Found Items Cataloged</span>
+                        <div class="rounded-circle bg-info-subtle text-info d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                            <i class="fa-solid fa-hand-holding-heart"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <h2 class="fw-bold mb-0 text-info">{{ detailed_data.total_found }}</h2>
+                        <span class="badge bg-info-subtle text-info font-monospace">{{ detailed_data.found_recovery_rate }}% returned</span>
+                    </div>
+                    <div class="pt-2 border-top small text-muted">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span><i class="fa-solid fa-circle text-info me-1" style="font-size: 8px;"></i> Unclaimed (Found):</span>
+                            <strong class="text-dark">{{ detailed_data.found_open_count }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span><i class="fa-solid fa-circle text-warning me-1" style="font-size: 8px;"></i> Claimed / Verified:</span>
+                            <strong class="text-dark">{{ detailed_data.found_claimed_count + detailed_data.found_verified_count }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span><i class="fa-solid fa-circle text-success me-1" style="font-size: 8px;"></i> Handed Over / Returned:</span>
+                            <strong class="text-success">{{ detailed_data.found_returned_count }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Platform Overall Recovery Rate Card -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card h-100 shadow-sm border-0 border-top border-4 border-success position-relative overflow-hidden">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Overall Recovery Rate</span>
+                        <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <h2 class="fw-bold mb-0 text-success">{{ detailed_data.recovery_rate }}%</h2>
+                        <span class="badge bg-success-subtle text-success font-monospace">{{ detailed_data.total_returned }} items restored</span>
+                    </div>
+                    <div class="progress mb-2" style="height: 6px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ detailed_data.recovery_rate }}%;" aria-valuenow="{{ detailed_data.recovery_rate }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="pt-2 border-top small text-muted">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Total Platform Listings:</span>
+                            <strong class="text-dark">{{ detailed_data.total_items }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Closed / Archived:</span>
+                            <strong class="text-dark">{{ detailed_data.total_closed }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Claims Resolution & Decisions Card -->
+        <div class="col-sm-6 col-xl-3">
+            <div class="card h-100 shadow-sm border-0 border-top border-4 border-warning position-relative overflow-hidden">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-uppercase text-muted fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Claim Resolution Audit</span>
+                        <div class="rounded-circle bg-warning-subtle text-warning d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                            <i class="fa-solid fa-file-circle-check"></i>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                        <h2 class="fw-bold mb-0 text-dark">{{ detailed_data.total_claims }}</h2>
+                        <span class="badge bg-warning-subtle text-dark font-monospace">{{ detailed_data.claim_approval_rate }}% approved</span>
+                    </div>
+                    <div class="pt-2 border-top small text-muted">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span><i class="fa-solid fa-circle text-success me-1" style="font-size: 8px;"></i> Approved Claims:</span>
+                            <strong class="text-success">{{ detailed_data.claims_approved }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span><i class="fa-solid fa-circle text-warning me-1" style="font-size: 8px;"></i> Pending Review:</span>
+                            <strong class="text-warning text-dark">{{ detailed_data.claims_pending }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span><i class="fa-solid fa-circle text-danger me-1" style="font-size: 8px;"></i> Rejected Claims:</span>
+                            <strong class="text-danger">{{ detailed_data.claims_rejected }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: Specific Core Status Highlights (Returned, Claimed, Rejected, Active) -->
+    <div class="card p-3 shadow-sm border-0 mb-4 bg-white">
+        <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+            <h5 class="fw-bold mb-0 text-dark">
+                <i class="fa-solid fa-tags me-2 text-primary"></i> Lifecycle Status Metrics Breakdown
+            </h5>
+            <span class="badge bg-light text-secondary border">Audited Numeric Counts</span>
+        </div>
+        <div class="row g-3 text-center">
+            <!-- Returned -->
+            <div class="col-6 col-md-3">
+                <div class="p-3 rounded bg-success-subtle border border-success-subtle h-100">
+                    <span class="text-success fw-bold text-uppercase small d-block mb-1">
+                        <i class="fa-solid fa-circle-check me-1"></i> Returned Items
+                    </span>
+                    <h3 class="fw-bold text-success mb-1">{{ detailed_data.total_returned }}</h3>
+                    <div class="small text-muted">
+                        Lost: <strong>{{ detailed_data.lost_returned_count }}</strong> | Found: <strong>{{ detailed_data.found_returned_count }}</strong>
+                    </div>
+                    <span class="badge bg-success mt-2">100% Resolved</span>
+                </div>
+            </div>
+            <!-- Claimed / In Verification -->
+            <div class="col-6 col-md-3">
+                <div class="p-3 rounded bg-warning-subtle border border-warning-subtle h-100">
+                    <span class="text-warning-emphasis fw-bold text-uppercase small d-block mb-1">
+                        <i class="fa-solid fa-handshake me-1"></i> Claimed / Verified
+                    </span>
+                    <h3 class="fw-bold text-dark mb-1">{{ detailed_data.total_claimed }}</h3>
+                    <div class="small text-muted">
+                        Lost: <strong>{{ detailed_data.lost_claimed_count }}</strong> | Found: <strong>{{ detailed_data.found_claimed_count + detailed_data.found_verified_count }}</strong>
+                    </div>
+                    <span class="badge bg-warning text-dark mt-2">Under Verification</span>
+                </div>
+            </div>
+            <!-- Rejected / Closed -->
+            <div class="col-6 col-md-3">
+                <div class="p-3 rounded bg-danger-subtle border border-danger-subtle h-100">
+                    <span class="text-danger fw-bold text-uppercase small d-block mb-1">
+                        <i class="fa-solid fa-ban me-1"></i> Rejected Claims
+                    </span>
+                    <h3 class="fw-bold text-danger mb-1">{{ detailed_data.claims_rejected }}</h3>
+                    <div class="small text-muted">
+                        Closed Items: <strong>{{ detailed_data.total_closed }}</strong>
+                    </div>
+                    <span class="badge bg-danger mt-2">Denied / Closed</span>
+                </div>
+            </div>
+            <!-- Active / Open -->
+            <div class="col-6 col-md-3">
+                <div class="p-3 rounded bg-primary-subtle border border-primary-subtle h-100">
+                    <span class="text-primary fw-bold text-uppercase small d-block mb-1">
+                        <i class="fa-solid fa-clock me-1"></i> Active / Open
+                    </span>
+                    <h3 class="fw-bold text-primary mb-1">{{ detailed_data.total_active }}</h3>
+                    <div class="small text-muted">
+                        Lost: <strong>{{ detailed_data.lost_open_count }}</strong> | Found: <strong>{{ detailed_data.found_open_count }}</strong>
+                    </div>
+                    <span class="badge bg-primary mt-2">Searching / Unclaimed</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: Visual Analytics & Graph Format (Chart.js) -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h4 class="fw-bold mb-0 text-dark">
+            <i class="fa-solid fa-chart-pie me-2 text-primary"></i> Visual Analytics & Graphical Reports
+        </h4>
+        <span class="text-muted small">Generated dynamically using Chart.js</span>
+    </div>
+
+    <!-- Graph Row 1: Status Comparison (Bar) & Overall Status (Doughnut) -->
+    <div class="row g-4 mb-4">
+        <!-- Chart 1: Lost vs Found by Status (Grouped Bar Chart) -->
+        <div class="col-lg-8">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="fw-bold mb-0 text-dark">Lost vs Found Items: Status Lifecycle Comparison</h6>
+                        <span class="text-muted small">Comparative distribution across Active, Claimed, Returned, and Closed states</span>
+                    </div>
+                    <span class="badge bg-light text-muted border"><i class="fa-solid fa-chart-column me-1"></i> Grouped Bar</span>
+                </div>
+                <div class="position-relative" style="height: 300px;">
+                    <canvas id="statusComparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 2: Overall Item Status Proportion (Doughnut) -->
+        <div class="col-lg-4">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="fw-bold mb-0 text-dark">Overall Status Share</h6>
+                        <span class="text-muted small">All items proportion</span>
+                    </div>
+                    <span class="badge bg-light text-muted border"><i class="fa-solid fa-chart-pie me-1"></i> Doughnut</span>
+                </div>
+                <div class="position-relative d-flex justify-content-center align-items-center" style="height: 300px;">
+                    <canvas id="overallStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graph Row 2: Claims Review Outcomes & Monthly Trend -->
+    <div class="row g-4 mb-4">
+        <!-- Chart 3: Claims Outcome Breakdown (Doughnut) -->
+        <div class="col-lg-4">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="fw-bold mb-0 text-dark">Claims Review Outcomes</h6>
+                        <span class="text-muted small">Approved vs Pending vs Rejected</span>
+                    </div>
+                    <span class="badge bg-light text-muted border"><i class="fa-solid fa-scale-balanced me-1"></i> Audit</span>
+                </div>
+                <div class="position-relative d-flex justify-content-center align-items-center" style="height: 280px;">
+                    <canvas id="claimsOutcomeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 4: Monthly Campus Activity & Recovery Trend (Line Chart) -->
+        <div class="col-lg-8">
+            <div class="card p-3 shadow-sm border-0 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="fw-bold mb-0 text-dark">Monthly Reporting & Recovery Trend</h6>
+                        <span class="text-muted small">Trajectory of lost reports, found items, and successful returns over time</span>
+                    </div>
+                    <span class="badge bg-light text-muted border"><i class="fa-solid fa-arrow-trend-up me-1"></i> Timeline</span>
+                </div>
+                <div class="position-relative" style="height: 280px;">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graph Row 3: Category Distribution (Lost vs Found) -->
+    <div class="card p-3 shadow-sm border-0 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h6 class="fw-bold mb-0 text-dark">Campus Category Breakdown: Lost vs Found Items</h6>
+                <span class="text-muted small">Analysis of item frequencies by product category</span>
+            </div>
+            <span class="badge bg-light text-muted border"><i class="fa-solid fa-shapes me-1"></i> Categories</span>
+        </div>
+        <div class="position-relative" style="height: 320px;">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+
+    <!-- SECTION 4: Comprehensive Numeric Breakdown Tables -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h4 class="fw-bold mb-0 text-dark">
+            <i class="fa-solid fa-table-list me-2 text-primary"></i> Detailed Numeric Breakdown Tables
+        </h4>
+        <span class="text-muted small">Granular platform audits</span>
+    </div>
+
+    <!-- Table 1: Item Status Matrix -->
+    <div class="card p-4 shadow-sm border-0 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="fw-bold mb-0 text-dark">Item Lifecycle Status Matrix</h5>
+                <span class="text-muted small">Cross-tabulation of Lost vs Found items across all operational stages</span>
+            </div>
+            <span class="badge bg-secondary-subtle text-secondary border">Total Items: {{ detailed_data.total_items }}</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="min-width: 180px;">Lifecycle Status</th>
+                        <th>Lost Items (#)</th>
+                        <th>% of Lost</th>
+                        <th>Found Items (#)</th>
+                        <th>% of Found</th>
+                        <th>Total Items (#)</th>
+                        <th>% of All Items</th>
+                        <th>Status Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in status_matrix %}
+                        <tr>
+                            <td>
+                                <span class="badge {{ row.badge_class }} px-2 py-1">{{ row.status_label }}</span>
+                            </td>
+                            <td class="fw-bold text-danger">{{ row.lost_count }}</td>
+                            <td><span class="badge bg-light text-dark border">{{ row.lost_pct }}%</span></td>
+                            <td class="fw-bold text-info">{{ row.found_count }}</td>
+                            <td><span class="badge bg-light text-dark border">{{ row.found_pct }}%</span></td>
+                            <td class="fw-bold text-dark">{{ row.total_count }}</td>
+                            <td><span class="badge bg-primary-subtle text-primary border">{{ row.total_pct }}%</span></td>
+                            <td class="text-muted small">{{ row.description }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="table-light fw-bold">
+                    <tr>
+                        <td>Grand Total</td>
+                        <td class="text-danger">{{ detailed_data.total_lost }}</td>
+                        <td>100.0%</td>
+                        <td class="text-info">{{ detailed_data.total_found }}</td>
+                        <td>100.0%</td>
+                        <td class="text-dark">{{ detailed_data.total_items }}</td>
+                        <td>100.0%</td>
+                        <td class="text-muted small">All platform items cataloged</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- Table 2: Claims Audit Breakdown -->
+    <div class="card p-4 shadow-sm border-0 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="fw-bold mb-0 text-dark">Ownership Claims Audit & Decision Breakdown</h5>
+                <span class="text-muted small">Verification metrics for student ownership claims</span>
+            </div>
+            <span class="badge bg-secondary-subtle text-secondary border">Total Claims: {{ detailed_data.total_claims }}</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="min-width: 160px;">Claim Status</th>
+                        <th>Total Claims (#)</th>
+                        <th>Percentage Share</th>
+                        <th>Administrative Action & Outcome</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for claim in claims_breakdown %}
+                        <tr>
+                            <td>
+                                <span class="badge {{ claim.badge_class }} px-2 py-1">{{ claim.status }}</span>
+                            </td>
+                            <td class="fw-bold text-dark">{{ claim.count }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="progress flex-grow-1" style="height: 6px; width: 80px;">
+                                        <div class="progress-bar {% if claim.status == 'Approved' %}bg-success{% elseif claim.status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}" style="width: {{ claim.pct }}%;"></div>
+                                    </div>
+                                    <span class="small font-monospace">{{ claim.pct }}%</span>
+                                </div>
+                            </td>
+                            <td class="text-muted small">{{ claim.description }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="table-light fw-bold">
+                    <tr>
+                        <td>Total Claims Evaluated</td>
+                        <td class="text-dark">{{ detailed_data.total_claims }}</td>
+                        <td>100.0%</td>
+                        <td class="text-muted small">Total claims processed through the admin portal</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- Row with Category Breakdown & Location Breakdown -->
+    <div class="row g-4 mb-4">
+        <!-- Category Breakdown Table -->
+        <div class="col-lg-7">
+            <div class="card p-4 shadow-sm border-0 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-layer-group me-2 text-primary"></i> Category Performance</h5>
+                    <span class="badge bg-light text-muted border">Top Categories</span>
+                </div>
+                {% if category_stats is empty %}
+                    <p class="text-muted small py-4 text-center">No category data recorded yet.</p>
                 {% else %}
-                    <ul class="list-group list-group-flush">
-                        {% for loc in detailed_data.location_stats %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>{{ loc.location }}</span>
-                                <span class="badge bg-primary rounded-pill">{{ loc.count }}</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Category</th>
+                                    <th class="text-center text-danger">Lost</th>
+                                    <th class="text-center text-info">Found</th>
+                                    <th class="text-center text-success">Returned</th>
+                                    <th class="text-center">Total</th>
+                                    <th class="text-end">Recovery %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cat in category_stats %}
+                                    <tr>
+                                        <td class="fw-semibold text-dark">{{ cat.category }}</td>
+                                        <td class="text-center">{{ cat.lost_count }}</td>
+                                        <td class="text-center">{{ cat.found_count }}</td>
+                                        <td class="text-center text-success fw-bold">{{ cat.returned_count }}</td>
+                                        <td class="text-center fw-bold">{{ cat.total_count }}</td>
+                                        <td class="text-end">
+                                            <span class="badge {% if cat.recovery_rate > 50 %}bg-success{% elseif cat.recovery_rate > 0 %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                                                {{ cat.recovery_rate }}%
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Location Breakdown Table -->
+        <div class="col-lg-5">
+            <div class="card p-4 shadow-sm border-0 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-location-dot me-2 text-danger"></i> Campus Incident Hotspots</h5>
+                    <span class="badge bg-light text-muted border">Top Locations</span>
+                </div>
+                {% if location_stats is empty %}
+                    <p class="text-muted small py-4 text-center">No location statistics available.</p>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Location</th>
+                                    <th class="text-center text-danger">Lost</th>
+                                    <th class="text-center text-info">Found</th>
+                                    <th class="text-end">Total Items</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for loc in location_stats %}
+                                    <tr>
+                                        <td>
+                                            <i class="fa-solid fa-map-pin me-1 text-danger small"></i>
+                                            <span class="fw-semibold text-dark">{{ loc.location }}</span>
+                                        </td>
+                                        <td class="text-center text-danger">{{ loc.lost_count }}</td>
+                                        <td class="text-center text-info">{{ loc.found_count }}</td>
+                                        <td class="text-end">
+                                            <span class="badge bg-primary rounded-pill">{{ loc.count }}</span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
+
+<!-- Embedded JSON payload for Chart.js (Safely placed in application/json block) -->
+<script id="reclaimx-chart-data" type="application/json">
+{{ chart_data_json | raw }}
+</script>
+
+<!-- Load Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+<!-- Chart.js Rendering Logic -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let rawJson = "{}";
+    const dataElement = document.getElementById("reclaimx-chart-data");
+    if (dataElement) {
+        rawJson = dataElement.textContent || "{}";
+    }
+
+    let charts = {};
+    try {
+        charts = JSON.parse(rawJson);
+    } catch(e) {
+        console.error("Failed to parse chart data JSON:", e);
+        charts = {};
+    }
+
+    // Modern Chart.js defaults
+    Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    Chart.defaults.color = "#495057";
+
+    // 1. Status Comparison: Lost vs Found (Grouped Bar Chart)
+    const ctxComp = document.getElementById("statusComparisonChart");
+    if (ctxComp && charts.statusComparison) {
+        new Chart(ctxComp, {
+            type: "bar",
+            data: {
+                labels: charts.statusComparison.labels || ["Active / Open", "Claimed", "Returned", "Closed"],
+                datasets: [
+                    {
+                        label: "Lost Items",
+                        data: charts.statusComparison.lost || [0, 0, 0, 0],
+                        backgroundColor: "rgba(255, 77, 109, 0.85)",
+                        borderColor: "#ff4d6d",
+                        borderWidth: 1,
+                        borderRadius: 6
+                    },
+                    {
+                        label: "Found Items",
+                        data: charts.statusComparison.found || [0, 0, 0, 0],
+                        backgroundColor: "rgba(0, 198, 255, 0.85)",
+                        borderColor: "#00c6ff",
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: "top" },
+                    tooltip: { mode: "index", intersect: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 },
+                        grid: { color: "rgba(0,0,0,0.05)" }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Overall Status Proportion (Doughnut Chart)
+    const ctxOverall = document.getElementById("overallStatusChart");
+    if (ctxOverall && charts.overallStatus) {
+        new Chart(ctxOverall, {
+            type: "doughnut",
+            data: {
+                labels: charts.overallStatus.labels || ["Returned", "Claimed", "Active Lost", "Active Found", "Closed"],
+                datasets: [{
+                    data: charts.overallStatus.data || [0, 0, 0, 0, 0],
+                    backgroundColor: charts.overallStatus.colors || ["#00e5a0", "#ffc947", "#ff4d6d", "#6c63ff", "#8d99ae"],
+                    borderWidth: 2,
+                    borderColor: "#ffffff"
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } }
+                },
+                cutout: "60%"
+            }
+        });
+    }
+
+    // 3. Claims Outcome Breakdown (Doughnut Chart)
+    const ctxClaims = document.getElementById("claimsOutcomeChart");
+    if (ctxClaims && charts.claimsOutcome) {
+        new Chart(ctxClaims, {
+            type: "doughnut",
+            data: {
+                labels: charts.claimsOutcome.labels || ["Approved", "Pending", "Rejected"],
+                datasets: [{
+                    data: charts.claimsOutcome.data || [0, 0, 0],
+                    backgroundColor: charts.claimsOutcome.colors || ["#00e5a0", "#ffc947", "#ff4d6d"],
+                    borderWidth: 2,
+                    borderColor: "#ffffff"
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: "bottom", labels: { boxWidth: 12 } }
+                },
+                cutout: "60%"
+            }
+        });
+    }
+
+    // 4. Monthly Activity & Trend (Line Chart)
+    const ctxMonthly = document.getElementById("monthlyTrendChart");
+    if (ctxMonthly && charts.monthlyTrend && charts.monthlyTrend.labels && charts.monthlyTrend.labels.length > 0) {
+        new Chart(ctxMonthly, {
+            type: "line",
+            data: {
+                labels: charts.monthlyTrend.labels,
+                datasets: [
+                    {
+                        label: "Lost Items Reported",
+                        data: charts.monthlyTrend.lost || [],
+                        borderColor: "#ff4d6d",
+                        backgroundColor: "rgba(255, 77, 109, 0.1)",
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4
+                    },
+                    {
+                        label: "Found Items Reported",
+                        data: charts.monthlyTrend.found || [],
+                        borderColor: "#00c6ff",
+                        backgroundColor: "rgba(0, 198, 255, 0.1)",
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4
+                    },
+                    {
+                        label: "Items Returned",
+                        data: charts.monthlyTrend.returned || [],
+                        borderColor: "#00e5a0",
+                        backgroundColor: "rgba(0, 229, 160, 0.1)",
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: "top" },
+                    tooltip: { mode: "index", intersect: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 },
+                        grid: { color: "rgba(0,0,0,0.05)" }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    } else if (ctxMonthly) {
+        // Fallback message if no monthly trend
+        ctxMonthly.parentElement.innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-muted"><p class="mb-0 small"><i class="fa-solid fa-clock-rotate-left me-1"></i> Insufficient timeline history. Data will render as records are added across months.</p></div>';
+    }
+
+    // 5. Category Breakdown: Lost vs Found (Bar Chart)
+    const ctxCategory = document.getElementById("categoryChart");
+    if (ctxCategory && charts.categoryChart && charts.categoryChart.labels && charts.categoryChart.labels.length > 0) {
+        new Chart(ctxCategory, {
+            type: "bar",
+            data: {
+                labels: charts.categoryChart.labels,
+                datasets: [
+                    {
+                        label: "Lost Items",
+                        data: charts.categoryChart.lost,
+                        backgroundColor: "rgba(255, 77, 109, 0.8)",
+                        borderRadius: 4
+                    },
+                    {
+                        label: "Found Items",
+                        data: charts.categoryChart.found,
+                        backgroundColor: "rgba(0, 198, 255, 0.8)",
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: "top" }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { precision: 0 },
+                        grid: { color: "rgba(0,0,0,0.05)" }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { maxRotation: 45, minRotation: 0 }
+                    }
+                }
+            }
+        });
+    } else if (ctxCategory) {
+        ctxCategory.parentElement.innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-muted"><p class="mb-0 small">No category statistics available to graph yet.</p></div>';
+    }
+});
+</script>
+
+<style>
+.badge-status-open {
+    background-color: #ff4d6d;
+    color: #fff;
+}
+.badge-status-claimed {
+    background-color: #ffc947;
+    color: #212529;
+}
+.badge-status-returned {
+    background-color: #00e5a0;
+    color: #05412b;
+}
+.badge-status-closed {
+    background-color: #6c757d;
+    color: #fff;
+}
+.badge-status-pending {
+    background-color: #ffc947;
+    color: #212529;
+}
+.badge-status-approved {
+    background-color: #00e5a0;
+    color: #05412b;
+}
+.badge-status-rejected {
+    background-color: #ff4d6d;
+    color: #fff;
+}
+@media print {
+    .navbar, footer, .btn, form { display: none !important; }
+    body { background-color: #ffffff !important; }
+    .card { box-shadow: none !important; border: 1px solid #dee2e6 !important; }
+}
+</style>
 {% endblock %}
