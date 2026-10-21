@@ -39,7 +39,7 @@ public class StatisticsService {
     public Map<String, Object> getDetailedReportData() {
         Map<String, Object> report = new HashMap<>();
 
-        // 1. Granular Item Counts by Type & Status
+        // item count by type and status 
         int lostOpen = countItems("lost", "Lost");
         int lostClaimed = countItems("lost", "Claimed");
         int lostReturned = countItems("lost", "Returned");
@@ -63,7 +63,7 @@ public class StatisticsService {
         double lostRecoveryRate = calcPct(lostReturned, totalLost);
         double foundRecoveryRate = calcPct(foundReturned, totalFound);
 
-        // 2. Claims Breakdown & Metrics
+        // claims for items and other metric
         int claimsPending = claimDao.countByStatus("Pending");
         int claimsApproved = claimDao.countByStatus("Approved");
         int claimsRejected = claimDao.countByStatus("Rejected");
@@ -73,7 +73,7 @@ public class StatisticsService {
         double claimRejectionRate = calcPct(claimsRejected, totalClaims);
         double claimPendingRate = calcPct(claimsPending, totalClaims);
 
-        // Store summary numeric values
+        // summary of everything in numeric value
         report.put("total_items", totalItems);
         report.put("total_lost", totalLost);
         report.put("total_found", totalFound);
@@ -85,7 +85,7 @@ public class StatisticsService {
         report.put("lost_recovery_rate", lostRecoveryRate);
         report.put("found_recovery_rate", foundRecoveryRate);
 
-        // Lost items specific numbers
+        // total number of lost items 
         report.put("lost_open_count", lostOpen);
         report.put("lost_claimed_count", lostClaimed);
         report.put("lost_returned_count", lostReturned);
@@ -95,7 +95,7 @@ public class StatisticsService {
         report.put("lost_returned_pct", calcPct(lostReturned, totalLost));
         report.put("lost_closed_pct", calcPct(lostClosed, totalLost));
 
-        // Found items specific numbers
+        // total number of found items
         report.put("found_open_count", foundOpen);
         report.put("found_claimed_count", foundClaimed);
         report.put("found_verified_count", foundVerified);
@@ -106,7 +106,7 @@ public class StatisticsService {
         report.put("found_returned_pct", calcPct(foundReturned, totalFound));
         report.put("found_closed_pct", calcPct(foundClosed, totalFound));
 
-        // Claims numbers
+        // total number of claims 
         report.put("total_claims", totalClaims);
         report.put("claims_pending", claimsPending);
         report.put("claims_approved", claimsApproved);
@@ -115,7 +115,7 @@ public class StatisticsService {
         report.put("claim_rejection_rate", claimRejectionRate);
         report.put("claim_pending_rate", claimPendingRate);
 
-        // 3. Item Status Matrix Table
+        //status of items 
         List<Map<String, Object>> statusMatrix = new ArrayList<>();
         statusMatrix.add(createMatrixRow(
             "Open / Active",
@@ -151,7 +151,7 @@ public class StatisticsService {
         ));
         report.put("status_matrix", statusMatrix);
 
-        // 4. Claims Status Breakdown Table
+        // claim status table
         List<Map<String, Object>> claimsBreakdown = new ArrayList<>();
         claimsBreakdown.add(createClaimRow(
             "Pending Review", claimsPending, claimPendingRate,
@@ -170,7 +170,7 @@ public class StatisticsService {
         ));
         report.put("claims_breakdown", claimsBreakdown);
 
-        // 5. Category Breakdown Query
+        // category of items 
         List<Map<String, Object>> categoryStats = new ArrayList<>();
         String catSql = """
             SELECT category,
@@ -206,7 +206,7 @@ public class StatisticsService {
         }
         report.put("category_stats", categoryStats);
 
-        // 6. Location Breakdown Query
+        // location of lost ya found item 
         List<Map<String, Object>> locationStats = new ArrayList<>();
         String locSql = """
             SELECT location,
@@ -237,7 +237,7 @@ public class StatisticsService {
         }
         report.put("location_stats", locationStats);
 
-        // 7. Monthly Trend Query
+        // monthly lost found items trend for analysis
         List<Map<String, Object>> monthlyStats = new ArrayList<>();
         String monthSql = """
             SELECT strftime('%Y-%m', created_at) as month,
@@ -270,44 +270,44 @@ public class StatisticsService {
         }
         report.put("monthly_stats", monthlyStats);
 
-        // Top Category and Top Location highlights
+        // top category for location of items 
         String topCategory = categoryStats.isEmpty() ? "None" : (String) categoryStats.get(0).get("category");
         String topLocation = locationStats.isEmpty() ? "None" : (String) locationStats.get(0).get("location");
         report.put("top_category", topCategory);
         report.put("top_location", topLocation);
 
-        // 8. Build Chart.js Data Structure & JSON Payload
+        // chart.js build
         Map<String, Object> chartData = new LinkedHashMap<>();
 
-        // Chart 1: Status Comparison (Grouped Bar Chart)
+        // status compare on charts 
         Map<String, Object> statusComp = new LinkedHashMap<>();
         statusComp.put("labels", Arrays.asList("Active / Open", "Claimed / In-Review", "Returned", "Closed"));
         statusComp.put("lost", Arrays.asList(lostOpen, lostClaimed, lostReturned, lostClosed));
         statusComp.put("found", Arrays.asList(foundOpen, foundClaimed + foundVerified, foundReturned, foundClosed));
         chartData.put("statusComparison", statusComp);
 
-        // Chart 2: Item Type Ratio (Doughnut)
+        // item type ratio in form of dougnut chart 
         Map<String, Object> typeDist = new LinkedHashMap<>();
         typeDist.put("labels", Arrays.asList("Lost Items", "Found Items"));
         typeDist.put("data", Arrays.asList(totalLost, totalFound));
         typeDist.put("colors", Arrays.asList("#ff4d6d", "#00c6ff"));
         chartData.put("typeDistribution", typeDist);
 
-        // Chart 3: Item Status Overall (Doughnut)
+        // overall item status
         Map<String, Object> overallStatus = new LinkedHashMap<>();
         overallStatus.put("labels", Arrays.asList("Returned to Owner", "Claimed / Verification", "Active Lost", "Active Found", "Closed / Rejected"));
         overallStatus.put("data", Arrays.asList(totalReturned, totalClaimed, lostOpen, foundOpen, totalClosed));
         overallStatus.put("colors", Arrays.asList("#00e5a0", "#ffc947", "#ff4d6d", "#6c63ff", "#8d99ae"));
         chartData.put("overallStatus", overallStatus);
 
-        // Chart 4: Claims Outcome Breakdown (Doughnut)
+        // claim outcomes like approved rejected or pending 
         Map<String, Object> claimsOutcome = new LinkedHashMap<>();
         claimsOutcome.put("labels", Arrays.asList("Approved", "Pending Review", "Rejected"));
         claimsOutcome.put("data", Arrays.asList(claimsApproved, claimsPending, claimsRejected));
         claimsOutcome.put("colors", Arrays.asList("#00e5a0", "#ffc947", "#ff4d6d"));
         chartData.put("claimsOutcome", claimsOutcome);
 
-        // Chart 5: Category Breakdown Bar Chart
+        // category of items in form of bar chart 
         List<String> catLabels = new ArrayList<>();
         List<Integer> catLost = new ArrayList<>();
         List<Integer> catFound = new ArrayList<>();
@@ -322,7 +322,7 @@ public class StatisticsService {
         catChart.put("found", catFound);
         chartData.put("categoryChart", catChart);
 
-        // Chart 6: Monthly Trend Line Chart
+        // montly trends in line chart 
         List<String> mLabels = new ArrayList<>();
         List<Integer> mLost = new ArrayList<>();
         List<Integer> mFound = new ArrayList<>();
@@ -401,11 +401,7 @@ public class StatisticsService {
         return 0;
     }
 
-    /**
-     * Seeds comprehensive sample demonstration records across various statuses
-     * (Lost, Found, Claimed, Verified, Returned, Closed, Pending, Approved, Rejected)
-     * if the database has few items, ensuring visual presentation reports look rich.
-     */
+   //seeds sample data 
     public boolean seedDemoDataIfRequested() {
         try (Connection conn = Database.getConnection()) {
             conn.setAutoCommit(false);
