@@ -101,9 +101,40 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
-.navbar-brand img {
-    border: 2px solid rgba(108, 99, 255, 0.5) !important;
-    box-shadow: 0 0 12px rgba(108, 99, 255, 0.3);
+.brand-logo-img {
+    width: 38px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1.5px solid rgba(0, 198, 255, 0.45) !important;
+    box-shadow: 0 0 15px rgba(0, 198, 255, 0.35);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.navbar-brand:hover .brand-logo-img {
+    transform: scale(1.08);
+    box-shadow: 0 0 20px rgba(0, 198, 255, 0.6);
+}
+.footer-logo-img {
+    width: 28px;
+    height: 28px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(108, 99, 255, 0.4);
+    box-shadow: 0 0 10px rgba(108, 99, 255, 0.3);
+}
+.auth-logo-img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    border-radius: 20px;
+    border: 2px solid rgba(0, 198, 255, 0.4);
+    box-shadow: 0 8px 25px rgba(0, 198, 255, 0.25);
+    background: #0f0f1a;
+    padding: 6px;
+    transition: transform 0.3s ease;
+}
+.auth-logo-img:hover {
+    transform: scale(1.05);
 }
 .navbar-dark .navbar-nav .nav-link {
     color: rgba(255,255,255,0.75) !important;
